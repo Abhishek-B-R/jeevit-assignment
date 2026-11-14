@@ -91,9 +91,12 @@ def render_summary(profile: Profile, deals: list[Deal]) -> str:
     n_emails = sum(len(d.email_ids) for d in deals)
 
     out = [f"# Your brand inbox, {today:%-d %B %Y}", ""]
-    out.append(f"Hi {name}. {n_emails} emails, {len(live) + len(info)} possible deals. "
-               f"{len(live)} need a decision, {len(info)} need more details, {len(no)} to turn down, "
-               f"{len(scams)} scams, {len(spam)} you can ignore.")
+    def n(count: int, one: str, many: str) -> str:
+        return f"{count} {one if count == 1 else many}"
+
+    out.append(f"Hi {name}. {n(n_emails, 'email', 'emails')}, {n(len(live) + len(info), 'possible deal', 'possible deals')}. "
+               f"{n(len(live), 'needs', 'need')} a decision, {n(len(info), 'needs', 'need')} more details, "
+               f"{len(no)} to turn down, {n(len(scams), 'scam', 'scams')}, {len(spam)} you can ignore.")
     out.append("")
 
     soon = [d for d in live if _urgency(d, today) <= 7]
@@ -102,8 +105,9 @@ def render_summary(profile: Profile, deals: list[Deal]) -> str:
             f"{_title(d)}: {ACTION_LABEL[d.action].lower()} ({_dates(d)})" for d in soon) + ".")
         out.append("")
     if scams:
+        verb = " is a scam or phishing." if len(scams) == 1 else " are scams or phishing."
         out.append("**Careful:** " + ", ".join(d.email_ids[0] for d in scams)
-                   + " are scams or phishing. Don't click links, pay anything or share personal details.")
+                   + verb + " Don't click links, pay anything or share personal details.")
         out.append("")
 
     if live:

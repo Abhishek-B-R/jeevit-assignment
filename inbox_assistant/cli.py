@@ -19,9 +19,27 @@ from .report import render_summary
 from .rules import Profile
 
 
+class InputError(Exception):
+    pass
+
+
+def _read_json(path: str, what: str):
+    try:
+        return json.loads(Path(path).read_text())
+    except FileNotFoundError:
+        raise InputError(f"{what} file not found: {path}")
+    except json.JSONDecodeError as e:
+        raise InputError(f"{what} file is not valid JSON: {path} ({e})")
+
+
 def _load(inbox: str, profile: str) -> tuple[list[Email], Profile]:
-    emails = [Email.model_validate(e) for e in json.loads(Path(inbox).read_text())]
-    return emails, Profile(json.loads(Path(profile).read_text()))
+    try:
+        emails = [Email.model_validate(e) for e in _read_json(inbox, "Inbox")]
+        return emails, Profile(_read_json(profile, "Profile"))
+    except (ValueError, KeyError, TypeError) as e:
+        if isinstance(e, InputError):
+            raise
+        raise InputError(f"Could not read the inbox or profile: {e}")
 
 
 def _write_outputs(out: Path, deals, results, summary: str) -> None:
@@ -51,7 +69,7 @@ def cmd_run(args) -> int:
 
 def cmd_eval(args) -> int:
     emails, profile = _load(args.inbox, args.profile)
-    expected = json.loads(Path(args.expected).read_text())
+    expected = _read_json(args.expected, "Expected-answers")
     runs, model_secs, model_calls = [], 0.0, 0
     for i in range(args.repeats):
         # Repeats bypass the cache, or they would all be the same run.
@@ -89,6 +107,9 @@ def main(argv: list[str] | None = None) -> int:
     args = p.parse_args(argv)
     try:
         return cmd_run(args) if args.cmd == "run" else cmd_eval(args)
+    except InputError as err:
+        print(f"error: {err}", file=sys.stderr)
+        return 2
     except LLMError as err:
         print(f"Model error: {err}\nCheck LLM_BASE_URL / LLM_MODEL / LLM_API_KEY in .env (see .env.example).",
               file=sys.stderr)

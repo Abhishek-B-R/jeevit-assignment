@@ -28,7 +28,9 @@ HINDI_MONTHS = {"जनवरी": 1, "फरवरी": 2, "फ़रवरी"
 INJECTION_PATTERNS = [
     r"\b(note|message|instruction)s? to (any|the) (ai|assistant|model|bot)",
     r"\bai assistant\b",
-    r"\bignore (all |any )?(previous|prior|above) (instructions|rules)",
+    r"\b(ignore|disregard|forget|override) (all |any )?(your |the |previous |prior |above )*(instructions|rules|guidelines)",
+    r"\b(language model|llm|chatgpt|gpt|claude|gemini)\b\s*[:,]",  # "Dear language model: ..."
+    r"\bdear (ai|assistant|bot|model|language model)\b",
     r"\bsystem prompt\b",
     r"\bclassify this (email|message)\b",
     r"\brecommend (accept|accepting)\b",
