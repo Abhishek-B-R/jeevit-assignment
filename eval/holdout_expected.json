@@ -1,0 +1,36 @@
+{
+  "_note": "Held-out set, written before running the system on it. Rules were not tuned on these afterwards.",
+  "emails": {
+    "H-01": {"category": "not_a_fit", "group": "zentro", "brand": "Zentro", "fee_amount": 180000, "currency": "INR", "deadline": "2026-12-20",
+             "why": "Phone brand; the email never says 'smartphone'."},
+    "H-02": {"category": "deal_offer", "group": "kesar", "fee_amount": 20000, "currency": "INR", "deadline": "2026-11-30",
+             "why": "Devanagari Hindi. At her story rate."},
+    "H-03": {"category": "not_a_fit", "group": "coinrise", "brand": "CoinRise", "fee_amount": 1500, "currency": "USD",
+             "why": "Crypto content rule."},
+    "H-04": {"category": "scam_or_phishing", "group": "H-04", "why": "Instagram look-alike login link."},
+    "H-05": {"category": "scam_or_phishing", "group": "H-05", "why": "Pay a 'refundable deposit'."},
+    "H-06": {"category": "deal_offer", "group": "lumen", "brand": "Lumen Lamps", "fee_amount": 45000, "currency": "INR", "deadline": "2026-12-10",
+             "why": "At rate, 2 months usage: acceptable on its own."},
+    "H-07": {"category": "deal_offer", "group": "lumen", "brand": "Lumen Lamps", "fee_amount": 50000, "currency": "INR",
+             "why": "Agency adds 2 stories for +5k: Rs 50,000 vs rate card Rs 60,000."},
+    "H-08": {"category": "needs_more_info", "also_ok": ["deal_offer"], "group": "orbit", "brand": "Orbit Bags", "fee_amount": null,
+             "why": "Rate inquiry, no offer yet."},
+    "H-09": {"category": "spam", "group": "H-09", "why": "Course promo, no unsubscribe line."},
+    "H-10": {"category": "not_a_fit", "group": "teenpatti", "brand": "Teen Patti Gold", "fee_amount": 60000, "currency": "INR",
+             "why": "Real-money card game is gambling, but none of my keywords say so."},
+    "H-11": {"category": "scam_or_phishing", "also_ok": ["deal_offer"], "group": "H-11",
+             "why": "Hidden instruction to an assistant. Possibly a real brand, but must never be auto-accepted."}
+  },
+  "deals": {
+    "zentro": {"action": "decline", "flags": ["exclusivity_conflict"]},
+    "kesar": {"action": "accept", "also_ok": ["ask_for_details"], "flags": []},
+    "coinrise": {"action": "decline", "flags": ["content_rule"]},
+    "H-04": {"action": "report", "flags": ["phishing_link"]},
+    "H-05": {"action": "report", "flags": ["pay_to_join"]},
+    "lumen": {"action": "negotiate", "flags": ["below_rate", "third_party_agency"]},
+    "orbit": {"action": "ask_for_details", "flags": []},
+    "H-09": {"action": "ignore", "flags": []},
+    "teenpatti": {"action": "decline", "flags": ["content_rule"]},
+    "H-11": {"action": "report", "also_ok": ["ask_for_details"], "flags": [["prompt_injection"]]}
+  }
+}
