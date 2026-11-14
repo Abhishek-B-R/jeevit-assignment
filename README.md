@@ -120,10 +120,11 @@ Measured on an Apple Silicon Mac running `qwen2.5-coder:14b` locally:
 
 ## How I used AI coding tools
 
-I built this with Claude Code (Anthropic's terminal coding agent) as the main tool. It wrote most of the code, tests, prompts, the expected answers and this README, working from TASK.md in short loops:
+I used Claude Code (Anthropic's terminal coding agent) as my main tool, and it wrote most of the code. I directed the work and decided what shipped. The process:
 
-1. Design first. The split of model reads / code judges, the regex layer that the model can't override, and a drafting model that never sees the raw email.
-2. A first end-to-end run on the local model, then reading every output by hand. That's where the two scam bugs above came from (the model's yes/no reads deciding, and the "pay Rs" regex), plus the made-up "2 weeks from delivery" date, and the realisation that the first "LLM alone" baseline was unfair because it hadn't been given the profile.
-3. Writing the held-out set *before* looking at its output, recording the blind score, then fixing and adding a regression test for each miss.
+1. **Model reads, code judges.** The core decision was to split the job: the model only turns each email into fields, and plain code decides everything else. Untrusted email text never reaches the drafting model, and the model can't override the regex scam checks.
+2. **Run it, then read every output.** After the first end-to-end run on the local model, every result was checked by hand. That found the two scam bugs described above, a made-up "2 weeks from delivery" date, and an unfair first "LLM alone" baseline (it hadn't been given the profile).
+3. **Test on emails it wasn't tuned on.** The held-out set was labelled before the system ran on it, and the blind score was recorded as is. Each miss was then fixed and given a regression test.
+4. **Verify like a reviewer.** Before submitting, I had it re-checked from a fresh clone of this repo, plus hand probes: bad config, missing files, a new injection phrasing. That found two loose ends, now fixed.
 
-Nothing was taken on trust: every number in this README comes from `uv run inbox eval` output saved in [`examples/`](examples/), and the 22 unit tests run offline in under a second.
+Nothing here is taken on trust. Every number comes from `uv run inbox eval` output saved in [`examples/`](examples/), and the 22 unit tests run offline in under a second.
